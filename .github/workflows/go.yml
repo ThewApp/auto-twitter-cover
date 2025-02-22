@@ -27,7 +27,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           push: true
           cache-from: type=registry,ref=${{ fromJSON(steps.meta.outputs.json).tags[0] }}
