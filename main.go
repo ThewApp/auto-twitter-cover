@@ -157,7 +157,10 @@ func nasaApi() (string, error) {
 		return "", err
 	}
 	var parsed []nasaImageResponse
-	json.Unmarshal(body, &parsed)
+	if err := json.Unmarshal(body, &parsed); err != nil {
+		log.Println("NASA API Unmarshal error:", err)
+		return nasaApi()
+	}
 
 	if len(parsed) != 1 {
 		return nasaApi()
