@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -147,8 +149,15 @@ func nasaApi() (string, error) {
 		Hdurl      string
 		Url        string
 	}
-	resp, err := http.Get("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&count=1")
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+	resp, err := client.Get("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&count=1")
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			log.Println("NASA API timeout, retrying with Unsplash...")
+			return unsplashApi()
+		}
 		return "", err
 	}
 	defer resp.Body.Close()
